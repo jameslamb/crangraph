@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 
+# Grab imports
+import re
+import requests as rq
+from bs4 import BeautifulSoup
+from bs4 import SoupStrainer
+import yaml
 
 def get_metadata(pkg_name):
     """
     Given the name of a package on CRAN, hit GitHub and get the
     DESCRIPTION file. Return the DESCRIPTION contents as YAML
     """
-    import requests
-    import yaml
 
     # Grab the description
     desc_url = "https://raw.githubusercontent.com/cran/{pkg_name}/master/DESCRIPTION".format(pkg_name=pkg_name)
-    result = requests.get(desc_url).contents
+    result = re.get(desc_url).contents
 
     # Return YAML version
     return(yaml.load(result))
@@ -21,12 +25,6 @@ def get_package_list():
     Grab a list of all available packages on CRAN.
     Returns a dictionary keyed by package name.
     """
-
-    # Load Dependencies
-    import requests as rq
-    from bs4 import BeautifulSoup
-    from bs4 import SoupStrainer
-    import re
 
     # Grab package listing from CRAN
     result = rq.get("https://cran.r-project.org/web/packages/available_packages_by_name.html")
@@ -50,19 +48,13 @@ def get_old_releases(pkg_name):
     are release date-times.
     """
 
-    # Load Dependencies
-    import requests as rq
-    from bs4 import BeautifulSoup
-    from bs4 import SoupStrainer
-    import re
-
     # Grab list of releases
     archive_url = 'https://cran.r-project.org/src/contrib/Archive/{pkg}/'.format(pkg = pkg_name)
     result = rq.get(archive_url)
 
     # Parse list
     soup = BeautifulSoup(result.content, 'html.parser')
-    release_nums = soup.findAll('a', {'href': re.compile('tar\.gz$')})
+    release_nums  = soup.findAll('a', {'href': re.compile('tar\.gz$')})
     release_dates = soup.findAll(text = re.compile('^\d{4}-\d{2}-\d{2}'))
 
     # Clean up the releases
@@ -84,7 +76,6 @@ def filter_version_reqs(pkg_dep_string):
 
     e.g. Turns "data.table (>= 1.0.1), ggplot2" to "data.table, ggplot2"
     """
-    import re
     x = re.sub('\(>=\s+[0-9]*\.[0-9]*\)', '', pkg_dep_string)
     return(x)
 
@@ -94,18 +85,12 @@ def find_release_commit(pkg_name, pkg_version):
     on the package's CRAN mirror repo on GitHub.
     """
 
-    # Load dependencies
-    import requests
-    from bs4 import BeautifulSoup
-    from bs4 import SoupStrainer
-    import re
-
     # Find URL to scrape
     skeleton = 'https://github.com/cran/{p}/releases/tag/{v}'
     release_page = skeleton.format(p = pkg_name, v = pkg_version)
 
     # Grab the source of the release page
-    result = requests.get(release_page)
+    result = rq.get(release_page)
     
     # Parse and extract commit number
     soup = BeautifulSoup(result.content, 'html.parser')
@@ -137,9 +122,6 @@ def scrape_deps_from_description(description_text):
     Given a raw DESCRIPTION file from an R package,
     return a dictionary with package dependencies.
     """
-
-    # Load dependencies
-    import re
 
     # Grab all the imported packages
     description_text = description_text.split('\n')
