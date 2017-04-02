@@ -68,9 +68,10 @@ def get_old_releases(pkg_name):
 
     # Grab list of releases
     archive_url = 'https://cran.r-project.org/src/contrib/Archive/{pkg}/'.format(pkg = pkg_name)
-    release_page = rq.get(archive_url)
+    result = rq.get(archive_url)
 
     # Parse list
+    soup = BeautifulSoup(result.content, 'html.parser')
     release_nums = soup.findAll('a', {'href': re.compile('tar\.gz$')})
     release_dates = soup.findAll(text = re.compile('^\d{4}-\d{2}-\d{2}'))
 
