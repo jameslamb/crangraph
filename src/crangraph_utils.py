@@ -41,16 +41,6 @@ def get_package_list():
 
     return(packages)
 
-
-
-def parse_dependencies(pkg_metadata):
-    """
-    Given package metadata from a DESCRIPTION file, return a
-    list of dependency packag
-    """
-    pass
-
-
 def get_old_releases(pkg_name):
     """
     Given the name of a package on CRAN, hit that package's CRAN
@@ -142,3 +132,34 @@ def build_release_path(pkg_name, pkg_version):
 
     return(pkg_metadata)
 
+def scrape_deps_from_description(description_text):
+    """
+    Given a raw DESCRIPTION file from an R package,
+    return a dictionary with package dependencies.
+    """
+
+    # Load dependencies
+    import re
+
+    # Grab all the imported packages
+    description_text = description_text.split('\n')
+    dep_text = ''
+    accumulate = False
+    for line in description_text:
+        
+        # Control accumulation (we want Imports and everything after until the next entry)
+        if re.match(r'^Imports', line):
+            accumulate = True
+        elif re.match(r'^[A-Za-z]', line):
+            accumulate = False
+        
+        # Build up all the Imports text
+        if accumulate:
+            dep_text += line.strip()
+            
+    # Clean up the text
+    dep_text = re.sub('Imports: ', '', dep_text)
+    deps = dep_text.split(',')
+    deps = [filter_version_reqs(dep).strip() for dep in deps]
+
+    return(set(deps))
