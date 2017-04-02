@@ -97,3 +97,48 @@ def filter_version_reqs(pkg_dep_string):
     import re
     x = re.sub('\(>=\s+[0-9]*\.[0-9]*\)', '', pkg_dep_string)
     return(x)
+
+def find_release_commit(pkg_name, pkg_version):
+    """
+    Given a package name and version, find the corresponding commit
+    on the package's CRAN mirror repo on GitHub.
+    """
+
+    # Load dependencies
+    import requests
+    from bs4 import BeautifulSoup
+    from bs4 import SoupStrainer
+    import re
+
+    # Find URL to scrape
+    skeleton = 'https://github.com/cran/{p}/releases/tag/{v}'
+    release_page = skeleton.format(p = pkg_name, v = pkg_version)
+
+    # Grab the source of the release page
+    result = requests.get(release_page)
+    
+    # Parse and extract commit number
+    soup = BeautifulSoup(result.content, 'html.parser')
+    commit_string = soup.findAll('a', {'href': re.compile('/cran/' + pkg_name + '/commit/')})[0].text
+    commit_string = commit_string.strip()
+    return(commit_string)
+
+def build_release_path(pkg_name, pkg_version):
+    """
+    Given a package name and version, return full URLs to package metadata
+    on CRAN mirror.
+    """
+
+    # Get release commit
+    commit_string = find_release_commit(pkg_name, pkg_version)
+
+    # Build up a dictionary of paths
+    base_url = 'https://raw.githubusercontent.com/cran/{pkg_name}/{commit}/'
+    commit_url = base_url.format(pkg_name = pkg_name, commit = commit_string)
+
+    # Plug in stuff
+    pkg_metadata = {'DESCRIPTION': commit_url + 'DESCRIPTION',
+                    'NAMESPACE'  : commit_url + 'NAMESPACE'}
+
+    return(pkg_metadata)
+
