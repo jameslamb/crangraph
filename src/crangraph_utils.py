@@ -6,6 +6,7 @@ import requests as rq
 from bs4 import BeautifulSoup
 from bs4 import SoupStrainer
 import yaml
+import sys
 
 def get_metadata(pkg_name):
     """
@@ -85,6 +86,11 @@ def find_release_commit(pkg_name, pkg_version):
     on the package's CRAN mirror repo on GitHub.
     """
 
+    # Break if package is not on cran
+    if not exists_on_cran(pkg_name):
+        error_msg = pkg_name + ' does not have a mirror repo on GitHub!'
+        raise ValueError(error_msg)
+
     # Find URL to scrape
     skeleton = 'https://github.com/cran/{p}/releases/tag/{v}'
     release_page = skeleton.format(p = pkg_name, v = pkg_version)
@@ -94,7 +100,17 @@ def find_release_commit(pkg_name, pkg_version):
     
     # Parse and extract commit number
     soup = BeautifulSoup(result.content, 'html.parser')
-    commit_string = soup.findAll('a', {'href': re.compile('/cran/' + pkg_name + '/commit/')})[0].text
+    try:
+        commit_string = soup.findAll('a', {'href': re.compile('/cran/' + pkg_name + '/commit/')})[0].text
+    except:
+        sys.stdout.write('THIS BROKE')
+        sys.stdout.write('\n')
+        sys.stdout.write(pkg_name)
+        sys.stdout.write('\n')
+        sys.stdout.write(pkg_version)
+        sys.stdout.write('\n')
+        raise ValueError('This is empty')
+
     commit_string = commit_string.strip()
     return(commit_string)
 
@@ -103,6 +119,11 @@ def build_release_path(pkg_name, pkg_version):
     Given a package name and version, return full URLs to package metadata
     on CRAN mirror.
     """
+
+    # Break if package is not on cran
+    if not exists_on_cran(pkg_name):
+        error_msg = pkg_name + ' does not have a mirror repo on GitHub!'
+        raise ValueError(error_msg)
 
     # Get release commit
     commit_string = find_release_commit(pkg_name, pkg_version)
@@ -145,3 +166,16 @@ def scrape_deps_from_description(description_text):
     deps = [filter_version_reqs(dep).strip() for dep in deps]
 
     return(deps)
+
+def exists_on_cran(pkg_name):
+    """
+    This function checks whether or not a given package has a
+    repo on the CRAN mirror.
+    """
+
+    # Build and ping URL
+    cran_url = 'https://github.com/cran/{pkg}'.format(pkg = pkg_name)
+    result = rq.get(cran_url).status_code
+
+    # Return whether or not this was successful
+    return (result == 200)

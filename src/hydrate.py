@@ -41,9 +41,22 @@ for pkg_name in packages:
 
         # Grab a DESCRIPTION file
         #sys.stdout.write('Grabbing the DESCRIPTION file for {pkg} v{ver}...\n'.format(pkg = pkg_name, ver = version))
-        desc_url = cg.build_release_path(pkg_name, version)['DESCRIPTION']
-        desc_text = rq.get(desc_url)
-                                         
+        try:
+            desc_url = cg.build_release_path(pkg_name, version)['DESCRIPTION']
+            desc_text = rq.get(desc_url)
+        except ValueError:
+            error_response = {"package": pkg_name,
+                              "version": version,
+                              "found": False,
+                              "release_dateTime": None,
+                              "dependencies": None
+                              }
+            
+            # Write out quarantined message and skip to next version
+            sys.stdout.write(str(error_response))
+            sys.stdout.write('\n')
+            next
+                         
         # parse dependencies
         deps = cg.scrape_deps_from_description(desc_text.content)
 
@@ -51,7 +64,8 @@ for pkg_name in packages:
         out_msg = {"package": pkg_name,
                    "version": version,
                    "release_dateTime": pkg_versions[version],
-                   "dependencies": deps
+                   "dependencies": deps,
+                   "found": True
                   }
 
         # Write to standard out
