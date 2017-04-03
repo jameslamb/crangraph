@@ -76,7 +76,7 @@ def filter_version_reqs(pkg_dep_string):
 
     e.g. Turns "data.table (>= 1.0.1), ggplot2" to "data.table, ggplot2"
     """
-    x = re.sub('\(>=\s+[0-9]*\.[0-9]*\)', '', pkg_dep_string)
+    x = re.sub('\(>=\s+[0-9]+\.[0-9.-]*\)', '', pkg_dep_string)
     return(x)
 
 def find_release_commit(pkg_name, pkg_version):
@@ -144,4 +144,4 @@ def scrape_deps_from_description(description_text):
     deps = dep_text.split(',')
     deps = [filter_version_reqs(dep).strip() for dep in deps]
 
-    return(set(deps))
+    return(deps)
