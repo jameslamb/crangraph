@@ -17,14 +17,13 @@ cd $KAFKA_HOME
 #
 # Start Zookeeper
 #
-if [ -f "bin/zookeeper-server-start.sh" ]
+if [ -f "bin/zookeeper-server-stop.sh" ]
 then
-    ./bin/zookeeper-server-start.sh config/zookeeper.properties &
-    sleep 5
+    ./bin/zookeeper-server-stop.sh
 fi
 
-if [ -f "bin/kafka-server-start.sh" ]
+if [ -f "bin/kafka-server-stop.sh" ]
 then
-    ./bin/kafka-server-start.sh config/server.properties &
+    ./bin/kafka-server-stop.sh
 fi
 

@@ -1,5 +1,13 @@
+#!/usr/bin/env python
+
 from kafka import KafkaConsumer
-consumer = KafkaConsumer('crangraph_topic', bootstrap_servers='localhost:9092')
+import pickle
+import sys
+
+# Set up the consumer
+consumer = KafkaConsumer('package_metadata', 
+                         bootstrap_servers='localhost:9092',
+                         value_deserializer=pickle.loads)
 
 for msg in consumer:
-    print (msg)
+   sys.stdout.write(str(msg.value))
