@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from kafka import KafkaProducer
-import crangraph.crangraph_utils as cgu
+import crangraph.utils as cgu
+import json
 import pickle
 import sys
 import time
@@ -9,7 +10,8 @@ import time
 
 # Set up producer running on localhost:9092
 sys.stdout.write('Starting package metadata producer...\n')
-metadata_producer = KafkaProducer(bootstrap_servers='localhost:9092')
+metadata_producer = KafkaProducer(bootstrap_servers='localhost:9092',
+                                  value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 sys.stdout.write('Producer running on localhost:9092\n')
 
 # Get the packages!
@@ -25,16 +27,16 @@ while True:
 
         # Get description file for current version
         sys.stdout.write('Grabbing metadata for ' + pkg_name + '\n')
-        desc = cgu.get_metadata(pkg_name)
+        desc = cgu.get_metadata(str(pkg_name))
 
         # Write out to Kafka
         try:
-            byte_output = pickle.dumps((pkg_name, desc))
-            metadata_producer.send('package_metadata', byte_output)
+            #byte_output = pickle.dumps({'package': pkg_name, 'description': desc}, protocol = 2)
+            metadata_producer.send('package_metadata', {'package': pkg_name, 'description': desc})
         except Exception as e:
             sys.stdout.write(str(e) + '\n')
 
         # Slow the app down while we're in testing mode
-        time.sleep(5)
+        #time.sleep(5)
 
     sys.stdout.write('done\n\n')

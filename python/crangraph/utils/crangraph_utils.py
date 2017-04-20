@@ -28,7 +28,6 @@ def get_metadata(pkg_name):
         sys.stdout.write(pkg_name +  ' package not found on CRAN')
         result = False
 
-    # Return YAML version
     return(result)
 
 def get_package_list():
