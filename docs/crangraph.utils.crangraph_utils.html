@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>crangraph.utils.crangraph_utils module &mdash; crangraph 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="crangraph 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> crangraph
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">crangraph</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>crangraph.utils.crangraph_utils module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/crangraph.utils.crangraph_utils.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-crangraph.utils.crangraph_utils">
+<span id="crangraph-utils-crangraph-utils-module"></span><h1>crangraph.utils.crangraph_utils module<a class="headerlink" href="#module-crangraph.utils.crangraph_utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.build_release_path">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">build_release_path</code><span class="sig-paren">(</span><em>pkg_name</em>, <em>pkg_version</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#build_release_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.build_release_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a package name and version, return full URLs to package metadata     on CRAN mirror.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">pkg_name (str): Name of an R package</p>
+<p class="last">pkg_version (str): Version number for an R package</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.exists_on_github">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">exists_on_github</code><span class="sig-paren">(</span><em>pkg_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#exists_on_github"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.exists_on_github" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function checks whether or not a given package has a     repo on the CRAN mirror.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>pkg_name (str): Name of an R package</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.filter_version_reqs">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">filter_version_reqs</code><span class="sig-paren">(</span><em>pkg_dep_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#filter_version_reqs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.filter_version_reqs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given R package listing in a DESCRIPTION file, potentially strip off     version requirements.</p>
+<p>e.g. Turns &#8220;data.table (&gt;= 1.0.1), ggplot2&#8221; to &#8220;data.table, ggplot2&#8221;</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>pkg_dep_string (str): A string with package dependencies from the Imports             field of an R DESCRIPTION file.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.find_release_commit">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">find_release_commit</code><span class="sig-paren">(</span><em>pkg_name</em>, <em>pkg_version</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#find_release_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.find_release_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a package name and version, find the corresponding commit     on the package&#8217;s CRAN mirror repo on GitHub.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">pkg_name (str): Name of an R package</p>
+<p class="last">pkg_version (str): Version number for an R package</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.get_metadata">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">get_metadata</code><span class="sig-paren">(</span><em>pkg_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#get_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.get_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the name of a package on CRAN, hit CRAN and get the     DESCRIPTION file. Return the DESCRIPTION contents as a string.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>pkg_name (str): Name of R package</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.get_old_releases">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">get_old_releases</code><span class="sig-paren">(</span><em>pkg_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#get_old_releases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.get_old_releases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the name of a package on CRAN, hit that package&#8217;s CRAN     archive page to get a list of all releases.</p>
+<p>Returns a dictionary where keys are version numbers and values     are release date-times.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>pkg_name (str): Name of an R package</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.get_package_list">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">get_package_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#get_package_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.get_package_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab a list of all available packages currently on CRAN.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>dict: a dictionary keyed by package name.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="crangraph.utils.crangraph_utils.scrape_deps_from_description">
+<code class="descclassname">crangraph.utils.crangraph_utils.</code><code class="descname">scrape_deps_from_description</code><span class="sig-paren">(</span><em>description_text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/crangraph/utils/crangraph_utils.html#scrape_deps_from_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crangraph.utils.crangraph_utils.scrape_deps_from_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a raw DESCRIPTION file from an R package,     return a dictionary with package dependencies.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>description_text (str): Raw text of an R package&#8217;s DESCRIPTION file</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, James Lamb, Surya Nimmagadda, Jason Xie.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
