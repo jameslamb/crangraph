@@ -24,3 +24,4 @@ class ParseDepsBolt(Bolt):
 
         # emit package-dependency tuples
         self.emit_many([{'package': pkg_name, 'dependency': dep} for dep in deps])
+        self.log([{'package': pkg_name, 'dependency': dep} for dep in deps])

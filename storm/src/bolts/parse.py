@@ -23,4 +23,5 @@ class ParseDepsBolt(Bolt):
         deps = cgu.scrape_deps_from_description(pkg_description)
 
         # emit package-dependency tuples
+        self.log("Dependencies: %s", deps)
         self.emit_many([{'package': pkg_name, 'dependency': dep} for dep in deps])
