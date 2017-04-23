@@ -211,20 +211,28 @@ fi
 
     echo "Installing components necessary to run Flask app.."
 
-    # nginx as a webserver
+    # use nginx as a webserver
     sudo yum install -y nginx
+
+    # Update nginx.conf
+    cp $HOME/crangraph/setup/nginx.conf /etc/nginx/nginx.conf
+
+    # Update the server config
+    python $HOME/crangraph/setup/sub_in_pub_dns.py
+    cp $HOME/crangraph/setup/virtual.conf /etc/nginx/conf.d/virtual.conf
 
     # References:
     # [1] https://www.matthealy.com.au/blog/post/deploying-flask-to-amazon-web-services-ec2/
+    # [2] http://nginx.org/en/docs/beginners_guide.html
     echo "Installation of Flask components complete."
 
 #### Install python package and conda env ####
 
     # Set up variables (since Anaconda isn't on our path yet)
-    $CONDA_BIN="/home/ec2-user/anaconda2/bin"
-    $ACTIVATE_ALIAS="$CONDA_BIN/activate"
-    $DEACTIVATE_ALIAS="$CONDA_BIN/deactivate"
-    $CONDA_ENV_ALIAS="$CONDA_BIN/conda-env"
+    CONDA_BIN="/home/ec2-user/anaconda2/bin"
+    ACTIVATE_ALIAS="$CONDA_BIN/activate"
+    DEACTIVATE_ALIAS="$CONDA_BIN/deactivate"
+    CONDA_ENV_ALIAS="$CONDA_BIN/conda-env"
 
     # Create crangraph conda environment
     cd $HOME/crangraph/python && \
