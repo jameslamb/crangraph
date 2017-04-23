@@ -79,7 +79,7 @@ h. The setup script is as automated as possible, but there are a few items which
 - *Do you approve the license terms? [yes|no]*: **yes ENTER**
 - *Anaconda2 will now be installed into this location...*: **ENTER**
 - *Do you wish the installer to prepend the Anaconda2 install location to PATH in your /home/ec2-user/.bashrc ?*: **yes ENTER**
-- *Please enter the public DNS name of your EC2 instance:* **your_ec2_publice_dns_name**
+- *Please enter the public DNS name of your EC2 instance:* **your_ec2_public_dns_name**
 
 i. After the setup script completes, either open a new terminal window or run `source ~/.bashrc`. This ensures that anything added to your PATH during the setup script will be available to call from the terminal
 

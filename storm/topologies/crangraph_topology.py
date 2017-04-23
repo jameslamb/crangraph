@@ -13,6 +13,6 @@ class crangraphTopology(Topology):
     count_bolt = ParseDepsBolt.spec(inputs={pkg_spout: Grouping.fields(['package'])},
                                     par=2,
                                     name='parse-deps-bolt')
-    dbupdate_bolt = DbUpdateBolt.spec(inputs={count_bolt: Grouping.fields(['package', 'dependency'])},
+    dbupdate_bolt = DbUpdateBolt.spec(inputs={count_bolt: Grouping.fields(['package'])},
                                     par=1,
                                     name='db-update-bolt')

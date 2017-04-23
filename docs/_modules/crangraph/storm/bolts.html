@@ -131,6 +131,7 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">crangraph.utils</span> <span class="kn">as</span> <span class="nn">cgu</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">streamparse.bolt</span> <span class="kn">import</span> <span class="n">Bolt</span>
 
 <span class="c1"># Bolt 1: take in descriptions and write out a set of relationship tuples</span>
@@ -154,7 +155,44 @@
         <span class="c1"># emit package-dependency tuples</span>
         <span class="n">out_tups</span> <span class="o">=</span> <span class="p">[(</span><span class="n">pkg_name</span><span class="p">,</span> <span class="n">dep</span><span class="p">)</span> <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">deps</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">out_tups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Bolt 2: Take in parsed tuples and update DB</span>
+<div class="viewcode-block" id="DbUpdateBolt"><a class="viewcode-back" href="../../../crangraph.storm.bolts.html#crangraph.storm.bolts.DbUpdateBolt">[docs]</a><span class="k">class</span> <span class="nc">DbUpdateBolt</span><span class="p">(</span><span class="n">Bolt</span><span class="p">):</span>
+
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
+
+<div class="viewcode-block" id="DbUpdateBolt.initialize"><a class="viewcode-back" href="../../../crangraph.storm.bolts.html#crangraph.storm.bolts.DbUpdateBolt.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s2">&quot;crangraph&quot;</span><span class="p">,</span>
+                                     <span class="n">user</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span>
+                                     <span class="n">password</span><span class="o">=</span><span class="s2">&quot;pass&quot;</span><span class="p">,</span>
+                                     <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+                                     <span class="n">port</span><span class="o">=</span><span class="s2">&quot;5432&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DbUpdateBolt.process"><a class="viewcode-back" href="../../../crangraph.storm.bolts.html#crangraph.storm.bolts.DbUpdateBolt.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tup</span><span class="p">):</span>
+        <span class="c1"># Get the package and dependency strings</span>
+        <span class="n">depstr</span> <span class="o">=</span> <span class="n">tup</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dependency&#39;</span><span class="p">]</span>
+        <span class="n">pkgname</span> <span class="o">=</span> <span class="n">tup</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;package&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Add dependencies into the database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) FROM crandeps WHERE pkgname =</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pkgname</span><span class="p">,))</span>
+        <span class="n">exists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">exists</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO crandeps (pkgname, depstr) VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pkgname</span><span class="p">,</span> <span class="n">depstr</span><span class="p">))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Package insert failed, trying update&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE crandeps SET depstr=(</span><span class="si">%s</span><span class="s2">) WHERE pkgname=(</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">depstr</span><span class="p">,</span> <span class="n">pkgname</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Update by incrementing the existing value in the table</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Package </span><span class="si">%s</span><span class="s2"> exists already, updating&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE crandeps SET depstr=(</span><span class="si">%s</span><span class="s2">) WHERE pkgname=(</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">depstr</span><span class="p">,</span> <span class="n">pkgname</span><span class="p">))</span>
+
+        <span class="c1"># Be sure we commit DB operations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>
