@@ -8,7 +8,29 @@ if [ ! -d "$HOME/bin" ]; then
   mkdir $HOME/bin
 fi
 
-# Mount our EBS volume on /data if not yet mounted
+#### Install Git ####
+if ! type "git" &> /dev/null; then
+    
+    echo "Installing Git..."
+
+    # Install Git
+    sudo yum install -y git-all
+
+    # References:
+    # [1] https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+    echo "Completed installation of Git"
+fi
+
+#### Get project source code ####
+
+    # Get the source code
+    cd $HOME && \
+    git clone https://github.com/jameslamb/crangraph && \
+    cd crangraph && \
+    git fetch origin dev && \
+    git checkout dev
+
+#### Mount our EBS volume on /data ####
 if [ ! -d "/data" ]; then
   
     cd $HOME
@@ -18,13 +40,15 @@ if [ ! -d "/data" ]; then
     read -rsp $'Press any key to continue or control-C to quit...\n' -n1 key
 
     # make a new ext4 filesystem on that EBS
-    mkfs.ext4 $1
+    sudo mkfs.ext4 $1
 
     # mount the new filesystem under /data
     sudo mkdir /data
     sudo mount -t ext4 $1 /data
     sudo chmod a+rwx /data
 fi
+
+
 
 #### Install misc. system components ####
 sudo yum install -y gcc-c++
@@ -116,19 +140,6 @@ else
     echo "Apache Kafka is already installed! KAFKA_HOME is set to '$KAFKA_HOME'";
 fi
 
-#### Install Git ####
-if ! type "git" &> /dev/null; then
-    
-    echo "Installing Git..."
-
-    # Install Git
-    sudo yum install git-all
-
-    # References:
-    # [1] https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
-    echo "Completed installation of Git"
-fi
-
 #### Install and start postgres ####
 
 if ! type "psql" &> /dev/null; then
@@ -144,18 +155,24 @@ if ! type "psql" &> /dev/null; then
     sudo mkdir /data/pgsql/logs
 
     # Create the postgres user
-    sudo useradd postgres
+    if ! id -u postgres > /dev/null 2>&1; then
+        sudo useradd postgres
+    fi
 
     # Change permissions on /data/pgsql
+    sudo chown postgres -R /data/pgsql
     sudo chmod 700 -R /data/pgsql
 
     # Initialize the DB
     sudo -u postgres initdb -D /data/pgsql/data
 
     # setup pg_hba.conf
+    sudo chmod 777 -R /data/pgsql
     sudo -u postgres echo "host    all         all         0.0.0.0         0.0.0.0               md5" >> /data/pgsql/data/pg_hba.conf
     sudo -u postgres echo "listen_addresses = '*'" >> /data/pgsql/data/postgresql.conf
     sudo -u postgres echo "standard_conforming_strings = off" >> /data/pgsql/data/postgresql.conf
+    sudo chown postgres -R /data/pgsql
+    sudo chmod 700 -R /data/pgsql
 
     # Make start/stop scripts
     # make start postgres file
@@ -178,24 +195,18 @@ EOF
 
 fi
 
-#### Install source code ####
-
-    # Get the source code
-    cd $HOME
-    git clone https://github.com/jameslamb/crangraph && \
-    cd crangraph && \
-    git fetch origin dev && \
-    git checkout dev
+#### Install python package and conda env ####
 
     # Create crangraph conda environment
     cd $HOME/crangraph/python && \
-    python setup.py install && \
-    conda-env create -n crangraph -f crangraph.yml
-
+    conda-env create -n crangraph -f crangraph.yml && \
+    sudo pip install six==1.10.0 && \
+    sudo python setup.py install
+    
     # Install crangraph python package into that environment
     cd $HOME/crangraph/python && \
     source activate crangraph && \
-    python setup.py install && \
+    sudo python setup.py install && \
     source deactivate crangraph
 
 # Setup path
