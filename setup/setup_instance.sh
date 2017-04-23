@@ -8,6 +8,49 @@ if [ ! -d "$HOME/bin" ]; then
   mkdir $HOME/bin
 fi
 
+# Mount our EBS volume on /data if not yet mounted
+if [ ! -d "/data" ]; then
+  
+    cd $HOME
+
+    echo "using drive " $1
+    echo "WARNING!! This will format the drive at" $1
+    read -rsp $'Press any key to continue or control-C to quit...\n' -n1 key
+
+    # make a new ext4 filesystem on that EBS
+    mkfs.ext4 $1
+
+    # mount the new filesystem under /data
+    sudo mkdir /data
+    sudo mount -t ext4 $1 /data
+    sudo chmod a+rwx /data
+fi
+
+#### Install misc. system components ####
+sudo yum install -y gcc-c++
+sudo yum install -y openssl-devel
+sudo yum install -y libffi-devel
+
+#### Install conda + Anaconda Python 2.7 ####
+
+if ! type "conda" &> /dev/null; then
+
+    echo "Installing conda..."
+
+    # grab lein install source
+    CONDA_SCRIPT="https://repo.continuum.io/archive/Anaconda2-4.3.1-Linux-x86_64.sh"
+    curl $CONDA_SCRIPT > $HOME/install_conda.sh
+
+    # Make it executable
+    chmod a+rwx $HOME/install_conda.sh
+    cd $HOME
+    ./install_conda.sh
+
+    # References:
+    # [1] https://leiningen.org/#install
+    echo "Completed installation of Conda."
+fi
+
 #### Install lein ####
     
 if ! type "lein" &> /dev/null; then
@@ -86,38 +129,54 @@ if ! type "git" &> /dev/null; then
     echo "Completed installation of Git"
 fi
 
-#### Install conda + Anaconda Python 2.7 ####
+#### Install and start postgres ####
 
-if ! type "conda" &> /dev/null; then
+if ! type "psql" &> /dev/null; then
 
-    echo "Installing conda..."
+    # Get postgres components
+    sudo yum install -y postgresql
+    sudo yum install -y postgresql-devel
+    sudo yum install -y postgresql-server
 
-    # grab lein install source
-    CONDA_SCRIPT="https://repo.continuum.io/archive/Anaconda2-4.3.1-Linux-x86_64.sh"
-    curl $CONDA_SCRIPT > $HOME/install_conda.sh
+    # set up directories for postgres
+    sudo mkdir /data/pgsql
+    sudo mkdir /data/pgsql/data
+    sudo mkdir /data/pgsql/logs
 
-    # Make it executable
-    chmod a+rwx $HOME/install_conda.sh
-    cd $HOME
-    ./install_conda.sh
+    # Create the postgres user
+    sudo useradd postgres
 
-    # References:
-    # [1] https://leiningen.org/#install
-    echo "Completed installation of Conda."
+    # Change permissions on /data/pgsql
+    sudo chmod 700 -R /data/pgsql
+
+    # Initialize the DB
+    sudo -u postgres initdb -D /data/pgsql/data
+
+    # setup pg_hba.conf
+    sudo -u postgres echo "host    all         all         0.0.0.0         0.0.0.0               md5" >> /data/pgsql/data/pg_hba.conf
+    sudo -u postgres echo "listen_addresses = '*'" >> /data/pgsql/data/postgresql.conf
+    sudo -u postgres echo "standard_conforming_strings = off" >> /data/pgsql/data/postgresql.conf
+
+    # Make start/stop scripts
+    # make start postgres file
+    # NOTE: These need to stay unindented to handle weird EOF thing
+    cd /data
+    cat > /data/start_postgres.sh <<EOF
+sudo -u postgres pg_ctl -D /data/pgsql/data -l /data/pgsql/logs/pgsql.log start
+EOF
+    chmod +x /data/start_postgres.sh
+
+#make a stop postgres file
+    cat > /data/stop_postgres.sh <<EOF
+#! /bin/bash
+sudo -u postgres pg_ctl -D /data/pgsql/data -l /data/pgsql/logs/pgsql.log stop
+EOF
+    chmod +x /data/stop_postgres.sh
+
+    #start postgres
+    /data/start_postgres.sh
+
 fi
-
-# Setup path
-echo "export PATH=$HOME/anaconda2/bin:$PATH:$HOME/bin:$HOME/bin/apache-storm-1.1.0/bin:$HOME/bin/kafka_2.10-0.10.1.1.tgz/bin" >> ~/.bashrc
-
-# Be sure the new environment is immediately available in the shell
-source ~/.bashrc
-
-#### Install postgres ####
-
-yum install postgresql
-service postgresql initdb
-service postgresql start
-pip install psycopg2
 
 #### Install source code ####
 
@@ -127,11 +186,6 @@ pip install psycopg2
     cd crangraph && \
     git fetch origin dev && \
     git checkout dev
-
-    # Some system packages
-    sudo yum install -y gcc-c++
-    sudo yum install -y openssl-devel
-    sudo yum install -y libffi-devel
 
     # Create crangraph conda environment
     cd $HOME/crangraph/python && \
