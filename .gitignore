@@ -1,0 +1,6 @@
+
+# Python stuff
+python/docs/_build/
+
+# Storm stuff
+storm/_build/
