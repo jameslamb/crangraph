@@ -221,10 +221,10 @@ fi
 #### Install python package and conda env ####
 
     # Set up variables (since Anaconda isn't on our path yet)
-    $CONDA_BIN="/home/ec2-user/anaconda2/bin"
-    $ACTIVATE_ALIAS="$CONDA_BIN/activate"
-    $DEACTIVATE_ALIAS="$CONDA_BIN/deactivate"
-    $CONDA_ENV_ALIAS="$CONDA_BIN/conda-env"
+    CONDA_BIN="/home/ec2-user/anaconda2/bin"
+    ACTIVATE_ALIAS="$CONDA_BIN/activate"
+    DEACTIVATE_ALIAS="$CONDA_BIN/deactivate"
+    CONDA_ENV_ALIAS="$CONDA_BIN/conda-env"
 
     # Create crangraph conda environment
     cd $HOME/crangraph/python && \
