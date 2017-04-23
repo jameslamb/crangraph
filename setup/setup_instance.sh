@@ -40,17 +40,9 @@ if ! type "storm" &> /dev/null; then
     tar -zxf apache-storm-1.1.0.tar.gz
     mkdir $HOME/bin/apache-storm-1.1.0/data
 
-    # Add a few lines to the conf files
-    echo "storm.zookeeper.servers:" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo "- \"localhost\"" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    #echo "\n" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo "storm.local.dir: \"$HOME/bin/apache-storm-1.1.0/data\"" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo "nimbus.host: \"localhost\"" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo "supervisor.slots.ports:" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo " - 6700" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo " - 6701" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo " - 6702" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
-    echo " - 6703" >> $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
+    # Replace the storm config file with our custom config
+    echo "Replacing the Storm config with custom version..."
+    cp $HOME/crangraph/setup/storm.yaml $HOME/bin/apache-storm-1.1.0/conf/storm.yaml
 
     # References:
     # [1] https://www.tutorialspoint.com/apache_storm/apache_storm_installation.html
@@ -130,8 +122,9 @@ source ~/.bashrc
     git checkout dev
 
     # Some system packages
-    sudo yum install gcc-c++
-    sudo yum install openssl-devel
+    sudo yum install -y gcc-c++
+    sudo yum install -y openssl-devel
+    sudo yum install -y libffi-devel
 
     # Create crangraph conda environment
     cd $HOME/crangraph/python && \
@@ -146,7 +139,4 @@ source ~/.bashrc
 
 # Setup path
 echo "export PATH=$HOME/anaconda2/bin:$PATH:$HOME/bin:$HOME/bin/apache-storm-1.1.0/bin:$HOME/bin/kafka_2.10-0.10.1.1.tgz/bin" >> ~/.bashrc
-
-# Be sure the new environment is immediately available in the shell
-source ~/.bashrc
 
