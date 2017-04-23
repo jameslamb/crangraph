@@ -16,6 +16,7 @@ a. Create an EC2 instance using the `Amazon Linux AMI` (ami-c58c1dd3)
     - you should use at least a `t2.2xlarge` instance type
 b. In the "Add Storage" stage of creating your AMI, add an EBS volume, general purpose SSD, with at least 80GB of storage
 c. In the "Configure Security Group" stage, add the following rules:
+
     - (Custom TCP Rule) 4040, 0.0.0.0/0
     - (Custom TCP Rule) 5000, 0.0.0.0/0
     - (Custom TCP Rule) 7180, 0.0.0.0/0
@@ -25,6 +26,7 @@ c. In the "Configure Security Group" stage, add the following rules:
     - (Custom TCP Rule) 50070, 0.0.0.0/0
     - (SSH) 22, 0.0.0.0/0
     - (HTTP) 80, 0.0.0.0/0
+
 d. Other than the options above, use default settings given by AWS
 
 ### 2. Run Setup script
@@ -59,13 +61,13 @@ g. Now that you've identified the name of your EBS volume (e.g. `/dev/xvdb`), ru
 
 h. The setup script is as automated as possible, but there are a few items which will need input from you. The prompts and the answers you should provide are given below. Answers wrapped in `<>` indicate keys (not literal commands).
 
-    - *WARNING!! This will format the drive at /dev/xvdb. Press any key to continue or control-C to quit...*: **<ENTER>**
-    - *In order to continue the installation process, please review the license agreement. Please, press ENTER to continue*: **<ENTER>**
-    - *[misc. Anaconda license stuff]*: **d** until you hit the end
-    - *Do you approve the license terms? [yes|no]*: **yes <ENTER>**
-    - *Anaconda2 will now be installed into this location...*: **<ENTER>**
-    - *Do you wish the installer to prepend the Anaconda2 install location to PATH in your /home/ec2-user/.bashrc ?*: **yes <ENTER>**
-    - *Please enter the public DNS name of your EC2 instance:* **your_ec2_publice_dns_name**
+- *WARNING!! This will format the drive at /dev/xvdb. Press any key to continue or control-C to quit...*: **<ENTER>**
+- *In order to continue the installation process, please review the license agreement. Please, press ENTER to continue*: **<ENTER>**
+- *[misc. Anaconda license stuff]*: **d** until you hit the end
+- *Do you approve the license terms? [yes|no]*: **yes <ENTER>**
+- *Anaconda2 will now be installed into this location...*: **<ENTER>**
+- *Do you wish the installer to prepend the Anaconda2 install location to PATH in your /home/ec2-user/.bashrc ?*: **yes <ENTER>**
+- *Please enter the public DNS name of your EC2 instance:* **your_ec2_publice_dns_name**
 
 i. After the setup script completes, either open a new terminal window or run `source ~/.bashrc`. This ensures that anything added to your PATH during the setup script will be available to call from the terminal
 
