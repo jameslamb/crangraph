@@ -215,6 +215,7 @@ fi
     sudo yum install -y nginx
 
     # Update nginx.conf
+    sudo chown ec2-user -R /etc/nginx
     cp $HOME/crangraph/setup/nginx.conf /etc/nginx/nginx.conf
 
     # Update the server config

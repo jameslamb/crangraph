@@ -65,16 +65,20 @@ h. The setup script is as automated as possible, but there are a few items which
     - *Do you approve the license terms? [yes|no]*: **yes <ENTER>**
     - *Anaconda2 will now be installed into this location...*: **<ENTER>**
     - *Do you wish the installer to prepend the Anaconda2 install location to PATH in your /home/ec2-user/.bashrc ?*: **yes <ENTER>**
+    - *Please enter the public DNS name of your EC2 instance:* **your_ec2_publice_dns_name**
 
 i. After the setup script completes, either open a new terminal window or run `source ~/.bashrc`. This ensures that anything added to your PATH during the setup script will be available to call from the terminal
 
-## Running the App
+## Running the App (Back End)
 
-All instructions below assume that you have ssh'd into an AMI like the one described above.
+All instructions below assume that you have ssh'd into the EC2 instance set up in the previous stage.
 
-1. Start up Kafka
-2. Start the producer
-3. Start up Storm
+
+
+
+## Running the App (Front End)
+
+The front end of `crangraph` is a Flask-power D3 network visualization of the dependency graph for any package requested by a user. To get the UI up and running, simply execute `ui/crangraph_ui.py` from a terminal inside your EC2.
 
 ## Stopping the App
 
