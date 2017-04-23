@@ -71,18 +71,36 @@ i. After the setup script completes, either open a new terminal window or run `s
 
 ## Running the App (Back End)
 
-All instructions below assume that you have ssh'd into the EC2 instance set up in the previous stage.
+All instructions below assume that you have ssh'd into an AMI like the one described above. Open 3 terminals to run individual components of the app.
 
+### Terminal1: Kafka
 
+    `source ~/.bashrc`
+    `cd /home/ec2-user/crangraph/kafka`
+    `./start_kafka.sh`
 
+### Terminal2: Producer
+
+    `source ~/.bashrc`
+    `cd /home/ec2-user/crangraph/kafka`
+    `chmod a+rwx producer.py`
+    `source activate crangraph`
+    `export PYTHONPATH=/home/ec2-user/crangraph/python:$PYTHONPATH`
+    `./producer.py`
+
+### Terminal3: Storm
+
+    `source ~/.bashrc`
+    `cd /home/ec2-user/crangraph/storm`
+    `sparse run`
 
 ## Running the App (Front End)
 
-The front end of `crangraph` is a Flask-power D3 network visualization of the dependency graph for any package requested by a user. To get the UI up and running, simply execute `ui/crangraph_ui.py` from a terminal inside your EC2.
+The front end of `crangraph` is a Flask-power D3 network visualization of the dependency graph for any package requested by a user. To get the UI up and running, simply execute `ui/crangraph_ui.py` from a terminal inside your EC
 
 ## Stopping the App
 
-## UI access  to the app from the outside world
+## UI access to the app from the outside world
 
 
 
