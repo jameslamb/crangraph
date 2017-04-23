@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>Crangraph!</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<!-- search bar -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Search package</h2>
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <input id="package" type="text" class="form-control input-lg" placeholder="ggplot" />
+                    <span class="input-group-btn">
+                        <button onclick="plot()" class="btn btn-info btn-lg" type="button">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="chart" style="margin-top: 30px; border-style: dotted;"></div>
+
+<script>
+document.getElementById("package").value = "car";
+plot();
+
+function plot(){
+    d3.select("svg").remove();
+
+    packageName = document.getElementById("package").value;
+
+    var width = 960,
+        height = 500;
+
+    var svg = d3.select("#chart").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var force = d3.layout.force()
+        .gravity(0.05)
+        .distance(100)
+        .charge(-100)
+        .size([width, height]);
+
+    d3.json("/data/" + packageName, function(error, json) {
+      if (error) throw error;
+
+      force
+          .nodes(json.nodes)
+          .links(json.links)
+          .start();
+
+      var link = svg.selectAll(".link")
+          .data(json.links)
+        .enter().append("line")
+          .attr("class", "link");
+
+      var node = svg.selectAll(".node")
+          .data(json.nodes)
+        .enter().append("g")
+          .attr("class", "node")
+          .call(force.drag);
+
+      node.append("image")
+          .attr("xlink:href", "https://cran.r-project.org/favicon.ico")
+          .attr("x", -8)
+          .attr("y", -8)
+          .attr("width", 16)
+          .attr("height", 16);
+
+      node.append("text")
+          .attr("dx", 12)
+          .attr("dy", ".35em")
+          .text(function(d) { return d.name });
+
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+      });
+    });
+}
+
+</script>
+</body>
+
+<style>
+body {
+    width: 70%; 
+    margin: 0 auto;
+}
+
+.link {
+  stroke: #ccc;
+}
+
+.node text {
+  pointer-events: none;
+  font: 10px sans-serif;
+}
+
+#custom-search-input{
+    padding: 3px;
+    border: solid 1px #E4E4E4;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+#custom-search-input input{
+    border: 0;
+    box-shadow: none;
+}
+
+#custom-search-input button{
+    margin: 2px 0 0 0;
+    background: none;
+    box-shadow: none;
+    border: 0;
+    color: #666666;
+    padding: 0 8px 0 10px;
+    border-left: solid 1px #ccc;
+}
+
+#custom-search-input button:hover{
+    border: 0;
+    box-shadow: none;
+    border-left: solid 1px #ccc;
+}
+
+#custom-search-input .glyphicon-search{
+    font-size: 23px;
+}
+
+</style>

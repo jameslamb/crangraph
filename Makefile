@@ -21,4 +21,5 @@ make docs_python:
 	cd python && \
 	sphinx-apidoc -f -e -o docs crangraph && \
 	cd docs && \
-	make html
+	make html && \
+	cp -R _build/html/* ../../docs/

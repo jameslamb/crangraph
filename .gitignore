@@ -1,0 +1,16 @@
+
+# Misc. stuff
+
+
+# Python stuff
+python/build/
+python/crangraph.egg-info/
+python/crangraph/__pycache__/
+python/crangraph/storm/__pycache__/
+python/crangraph/utils/__pycache__/
+python/dist/
+python/docs/_build/
+
+
+# Storm stuff
+storm/_build/
