@@ -112,6 +112,13 @@ echo "export PATH=$HOME/anaconda2/bin:$PATH:$HOME/bin:$HOME/bin/apache-storm-1.1
 # Be sure the new environment is immediately available in the shell
 source ~/.bashrc
 
+#### Install postgres ####
+
+yum install postgresql
+service postgresql initdb
+service postgresql start
+pip install psycopg2
+
 #### Install source code ####
 
     # Get the source code
