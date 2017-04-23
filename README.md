@@ -64,17 +64,9 @@ h. The setup script is as automated as possible, but there are a few items which
     - *[misc. Anaconda license stuff]*: **d** until you hit the end
     - *Do you approve the license terms? [yes|no]*: **yes <ENTER>**
     - *Anaconda2 will now be installed into this location...*: **<ENTER>**
-    - *Do you wish the installer to prepend the Anaconda2 install location to PATH in your /home/ec2-user/.bashrc ?*: **no <ENTER>**
-    - 
+    - *Do you wish the installer to prepend the Anaconda2 install location to PATH in your /home/ec2-user/.bashrc ?*: **yes <ENTER>**
 
-
-
-1. Install Kafka
-2. Install Storm
-3. Install `lein`
-4. Fetch this repo
-5. From the root of this repo, run `make install_python`
-6. Always work in this project's conda environment. Call `source activate crangraph` in all terminal shells
+i. After the setup script completes, either open a new terminal window or run `source ~/.bashrc`. This ensures that anything added to your PATH during the setup script will be available to call from the terminal
 
 ## Running the App
 

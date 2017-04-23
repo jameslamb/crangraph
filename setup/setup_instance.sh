@@ -24,11 +24,13 @@ fi
 #### Get project source code ####
 
     # Get the source code
+    echo "Fetching application code from GitHub..."
     cd $HOME && \
     git clone https://github.com/jameslamb/crangraph && \
     cd crangraph && \
     git fetch origin dev && \
     git checkout dev
+    echo "Completed fetching application code from GitHub."
 
 #### Mount our EBS volume on /data ####
 if [ ! -d "/data" ]; then
@@ -46,14 +48,19 @@ if [ ! -d "/data" ]; then
     sudo mkdir /data
     sudo mount -t ext4 $1 /data
     sudo chmod a+rwx /data
+
+    echo "Completed mounting EBS to /data."
 fi
 
 
 
 #### Install misc. system components ####
-sudo yum install -y gcc-c++
-sudo yum install -y openssl-devel
-sudo yum install -y libffi-devel
+
+    echo "Installing gcc, openssl, and libffi-devel..."
+    sudo yum install -y gcc-c++
+    sudo yum install -y openssl-devel
+    sudo yum install -y libffi-devel
+    echo "Completed installation of miscellanous system components."
 
 #### Install conda + Anaconda Python 2.7 ####
 
@@ -72,7 +79,7 @@ if ! type "conda" &> /dev/null; then
 
     # References:
     # [1] https://leiningen.org/#install
-    echo "Completed installation of Conda."
+    echo "Completed installation of conda."
 fi
 
 #### Install lein ####
@@ -135,7 +142,7 @@ if [ -z ${KAFKA_HOME+x} ]; then
     # References:
     # [1] http://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-
     # [2] https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm
-    echo "Completed installation of Apache Kafka"
+    echo "Completed installation of Apache Kafka."
 else 
     echo "Apache Kafka is already installed! KAFKA_HOME is set to '$KAFKA_HOME'";
 fi
@@ -144,10 +151,15 @@ fi
 
 if ! type "psql" &> /dev/null; then
 
+    echo "Installing PostgreSQL..."
+
     # Get postgres components
     sudo yum install -y postgresql
     sudo yum install -y postgresql-devel
     sudo yum install -y postgresql-server
+
+    echo "Completed installation of Postgres."
+    echo "Setting up Postgres..."
 
     # set up directories for postgres
     sudo mkdir /data/pgsql
@@ -183,7 +195,6 @@ sudo -u postgres pg_ctl -D /data/pgsql/data -l /data/pgsql/logs/pgsql.log start
 EOF
     chmod +x /data/start_postgres.sh
 
-#make a stop postgres file
     cat > /data/stop_postgres.sh <<EOF
 #! /bin/bash
 sudo -u postgres pg_ctl -D /data/pgsql/data -l /data/pgsql/logs/pgsql.log stop
@@ -193,21 +204,39 @@ EOF
     #start postgres
     /data/start_postgres.sh
 
+    echo "Completed setting up and starting PostgreSQL."
 fi
+
+#### Components needed to run Flask app ####
+
+    echo "Installing components necessary to run Flask app.."
+
+    # nginx as a webserver
+    sudo yum install -y nginx
+
+    # References:
+    # [1] https://www.matthealy.com.au/blog/post/deploying-flask-to-amazon-web-services-ec2/
+    echo "Installation of Flask components complete."
 
 #### Install python package and conda env ####
 
+    # Set up variables (since Anaconda isn't on our path yet)
+    $CONDA_BIN="/home/ec2-user/anaconda2/bin"
+    $ACTIVATE_ALIAS="$CONDA_BIN/activate"
+    $DEACTIVATE_ALIAS="$CONDA_BIN/deactivate"
+    $CONDA_ENV_ALIAS="$CONDA_BIN/conda-env"
+
     # Create crangraph conda environment
     cd $HOME/crangraph/python && \
-    conda-env create -n crangraph -f crangraph.yml && \
+    $CONDA_ENV_ALIAS create -n crangraph -f crangraph.yml && \
     sudo pip install six==1.10.0 && \
     sudo python setup.py install
     
     # Install crangraph python package into that environment
     cd $HOME/crangraph/python && \
-    source activate crangraph && \
+    source $ACTIVATE_ALIAS crangraph && \
     sudo python setup.py install && \
-    source deactivate crangraph
+    source $DEACTIVATE_ALIAS crangraph
 
 # Setup path
 echo "export PATH=$HOME/anaconda2/bin:$PATH:$HOME/bin:$HOME/bin/apache-storm-1.1.0/bin:$HOME/bin/kafka_2.10-0.10.1.1.tgz/bin" >> ~/.bashrc
