@@ -4,12 +4,13 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import crangraph.utils as cgu
 import json
+import psycopg2
 from streamparse.bolt import Bolt
 
 # Bolt 1: take in descriptions and write out a set of relationship tuples
 class ParseDepsBolt(Bolt):
 
-    outputs = ['package', 'dependency']
+    outputs = ['package', 'dependencies']
 
     def initialize(self, conf, ctx):
         pass
@@ -25,16 +26,14 @@ class ParseDepsBolt(Bolt):
         deps = cgu.scrape_deps_from_description(pkg_description)
 
         # emit package-dependency tuples
-        out_tups = [(pkg_name, dep) for dep in deps]
-        for tup in out_tups:
-            self.log(str(tup))
-            self.emit(tup)
-
+        self.log('Parsed deps: ' + pkg_name)
+        out_tup = (pkg_name, deps)
+        self.emit(out_tup)
 
 # Bolt 2: Take in parsed tuples and update DB
 class DbUpdateBolt(Bolt):
 
-    outputs = [None]
+    outputs = ['none']
 
     def initialize(self, conf, ctx):
         self.conn = psycopg2.connect(database="crangraph",
@@ -46,8 +45,8 @@ class DbUpdateBolt(Bolt):
 
     def process(self, tup):
         # Get the package and dependency strings
-        depstr = tup.values[0]['dependency']
-        pkgname = tup.values[0]['package']
+        depstr = json.dumps({'dependencies': tup.values[1]})
+        pkgname = tup.values[0]
 
         # Add dependencies into the database
         self.cur.execute("SELECT COUNT(*) FROM crandeps WHERE pkgname =%s", (pkgname,))
@@ -64,4 +63,4 @@ class DbUpdateBolt(Bolt):
             self.cur.execute("UPDATE crandeps SET depstr=(%s) WHERE pkgname=(%s)", (depstr, pkgname))
 
         # Be sure we commit DB operations
-        self.cur.commit()
+        self.conn.commit()

@@ -247,6 +247,9 @@ fi
     sudo python setup.py install && \
     source $DEACTIVATE_ALIAS crangraph
 
+    # Add crangraph package to PYTHONPATH to be super sure
+    echo "export PYTHONPATH=/home/ec2-user/crangraph/python:$PYTHONPATH" >> ~/.bashrc
+
 # Setup path
 echo "export PATH=$HOME/anaconda2/bin:$PATH:$HOME/bin:$HOME/bin/apache-storm-1.1.0/bin:$HOME/bin/kafka_2.10-0.10.1.1.tgz/bin" >> ~/.bashrc
 

@@ -17,6 +17,7 @@ try:
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cur = conn.cursor()
     cur.execute("CREATE DATABASE crangraph")
+    conn.commit()
     cur.close()
     conn.close()
 except:
@@ -38,6 +39,7 @@ pg_cur.execute("""
                 )
                """
                )
+pg_conn.commit()
 
 # Be courteous and close out
 pg_cur.close()

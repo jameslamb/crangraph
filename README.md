@@ -103,7 +103,7 @@ cd /home/ec2-user/crangraph/kafka
 chmod a+rwx producer.py
 source activate crangraph
 export PYTHONPATH=/home/ec2-user/crangraph/python:$PYTHONPATH
-./producer.py
+sudo python producer.py
 ```
 
 ### Terminal3: Storm
