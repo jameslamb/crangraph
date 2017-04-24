@@ -34,7 +34,7 @@ d. Other than the options above, use default settings given by AWS
 a. SSH into the EC2 instance you just created. This can be done with a command of the form:
 
 ```
-ssh -i /path/to/my_keypair.pem ec2-user@ec2-174-129-53-252.compute-1.amazonaws.com
+ssh -i /path/to/my_keypair.pem ec2-user@<EC_PUBLIC_DNS>.amazonaws.com
 ```
 
 b. Be sure that you are in home
