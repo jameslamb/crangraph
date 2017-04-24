@@ -211,6 +211,7 @@ def filter_version_reqs(pkg_dep_string):
     assert isinstance(pkg_dep_string, str)
 
     x = re.sub('\(>=\s+[0-9]+\.[0-9.-]*\)', '', pkg_dep_string)
+    x = re.sub('\(>\s+[0-9]+\.[0-9.-]*\)', '', x)
     return(x)
 
 def exists_on_github(pkg_name):

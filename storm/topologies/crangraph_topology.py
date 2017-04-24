@@ -2,6 +2,10 @@
 crangraph topology
 """
 
+# Run the code in bolts __init__.py
+import bolts
+
+# Other imports
 from streamparse import Grouping, Topology
 from crangraph.storm.bolts import ParseDepsBolt
 from crangraph.storm.bolts import DbUpdateBolt

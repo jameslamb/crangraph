@@ -102,8 +102,7 @@ source ~/.bashrc
 cd /home/ec2-user/crangraph/kafka
 chmod a+rwx producer.py
 source activate crangraph
-export PYTHONPATH=/home/ec2-user/crangraph/python:$PYTHONPATH
-sudo python producer.py
+./producer.py
 ```
 
 ### Terminal3: Storm
@@ -111,16 +110,22 @@ sudo python producer.py
 ```
 source ~/.bashrc
 cd /home/ec2-user/crangraph/storm
+source activate crangraph
 sparse run
 ```
 
 ## Running the App (Front End)
 
-The front end of `crangraph` is a Flask-power D3 network visualization of the dependency graph for any package requested by a user. To get the UI up and running, simply execute `ui/crangraph_ui.py` from a terminal inside your EC
+The front end of `crangraph` is a Flask-power D3 network visualization of the dependency graph for any package requested by a user. To get the UI up and running, simply run the following in a terminal window inside the EC2:
 
-## Stopping the App
+```
+cd $HOME/crangraph/ui
+source activate crangraph
+chmod a+rwx run_app.sh
+```
 
-## UI access to the app from the outside world
+Once you run the commands above, you can access the app's front end simply by navigating to your EC's public DNS name in your browser. You can also get a JSON representation of any state of the graph as follows:
 
-
-
+```
+curl <EC_PUBLIC_DNS>/data/<package_name>
+```

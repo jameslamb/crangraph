@@ -239,6 +239,7 @@ fi
     cd $HOME/crangraph/python && \
     $CONDA_ENV_ALIAS create -n crangraph -f crangraph.yml && \
     sudo pip install six==1.10.0 && \
+    sudo pip install psycopg2==2.7 && \
     sudo python setup.py install
     
     # Install crangraph python package into that environment
