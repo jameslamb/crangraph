@@ -122,6 +122,7 @@ The front end of `crangraph` is a Flask-power D3 network visualization of the de
 cd $HOME/crangraph/ui
 source activate crangraph
 chmod a+rwx run_app.sh
+./run_app.sh
 ```
 
 Once you run the commands above, you can access the app's front end simply by navigating to your EC's public DNS name in your browser. You can also get a JSON representation of any state of the graph as follows:
